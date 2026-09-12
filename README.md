@@ -12,3 +12,7 @@ Read more information [here](https://doc671.web.app/coben/info).
 Enter the athletes' names, their current point values and the points to be given after the next event. There are additional options to alter the number of eliminations, number of simulations, rounding mode and whether to show uncertainties (Wilson intervals).
 
 ![Example usage with 3 athletes.](./src/assets/example-usage.png)
+
+## Credits
+- [Cary Huang](https://github.com/carykh) for creating Algathlons in the first place, and for the original COBEN calculator in Processing.
+- [C Ezra M](https://github.com/C-Ezra-M) for creating an improved COBEN calculator, which has a number of additional features I've re-implemented here.
