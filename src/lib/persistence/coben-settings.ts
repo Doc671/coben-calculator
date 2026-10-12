@@ -1,4 +1,5 @@
 export type RoundingMode = "DecimalPlaces" | "SignificantFigures" | "IntervalSignificantFigures";
+export type TiebreakMode = "Random" | "HighestPreviousPoints" | "EliminateAll";
 
 export interface CobenSettings {
     version: number;
@@ -8,5 +9,6 @@ export interface CobenSettings {
     zScore: number;
     roundingMode: RoundingMode;
     roundingNumber: number;
+    tiebreakMode: TiebreakMode;
     theme: "System" | "Light" | "Dark";
 }

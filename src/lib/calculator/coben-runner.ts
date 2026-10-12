@@ -1,4 +1,5 @@
 import { CobenResult } from '../calculator/coben-result';
+import type { TiebreakMode } from '../persistence/coben-settings';
 import type { CobenThreadRequest, CobenThreadResponse } from './message-types';
 
 export async function calculateCoben(
@@ -8,7 +9,8 @@ export async function calculateCoben(
     eliminationCount: number = 1,
     simulationCount: number = 1_000_000,
     showWilsonIntervals: boolean = false,
-    zScore: number = 1.96
+    zScore: number = 1.96,
+    tiebreakMode: TiebreakMode
 ): Promise<CobenResult[]> {
     let athleteCount: number = currentPoints.length;
     if (pointsToDistribute.length != athleteCount) {
@@ -26,14 +28,22 @@ export async function calculateCoben(
         simulationsPerThread[workerCount - 1] += remainder;
     }
     
-    const workerResults = await Promise.all(
+    const workerResults = await Promise.allSettled(
         simulationsPerThread.map(workerSimulationCount => runWorker({
             currentPoints: currentPoints,
             pointsToDistribute: pointsToDistribute,
             eliminationCount: eliminationCount,
-            simulationCount: workerSimulationCount
+            simulationCount: workerSimulationCount,
+            tiebreakMode: tiebreakMode
         }))
-    );
+    ).then(results => results.map(result => {
+        if (result.status === "fulfilled") {
+            return result.value;
+        } else {
+            console.error(`Worker failed: ${result.reason}`);
+            return { eliminations: new Array<number>(athleteCount).fill(0) };
+        }
+    }));
     
     const eliminationCounts = new Array<number>(athleteCount).fill(0);
     for (let i = 0; i < workerResults.length; i++) {

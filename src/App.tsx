@@ -17,6 +17,7 @@ const defaultSettings: CobenSettings = {
     zScore: 1.96,
     roundingMode: "DecimalPlaces",
     roundingNumber: 2,
+    tiebreakMode: "Random",
     theme: "System"
 };
 
@@ -231,7 +232,7 @@ function useLocalStorageState<T>(key: string, defaultValue: T) {
 }
 
 async function runCoben(settings: CobenSettings, names: string[], currentPoints: number[], pointsToDistribute: number[]): Promise<Array<CobenResult>> {
-    return await calculateCoben(names, currentPoints, pointsToDistribute, settings.eliminationCount, settings.simulationCount, settings.showWilsonIntervals, settings.zScore);
+    return await calculateCoben(names, currentPoints, pointsToDistribute, settings.eliminationCount, settings.simulationCount, settings.showWilsonIntervals, settings.zScore, settings.tiebreakMode);
 }
 
 export default App

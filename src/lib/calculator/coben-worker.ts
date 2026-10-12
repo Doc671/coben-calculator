@@ -8,9 +8,11 @@ onmessage = (e) => {
     const newPoints = new Array<number>(athleteCount);
     const lowestPoints = new Array<number>(request.eliminationCount);
     const eliminationCounts = new Array<number>(athleteCount).fill(0);
+    const eliminationPossible = new Array<boolean>(athleteCount).fill(false);
 
     for (let i = 0; i < request.simulationCount; i++) {
         lowestPoints.fill(Number.MAX_VALUE);
+        eliminationPossible.fill(false);
         shuffle(pointsToDistribute);
 
         for (let j = 0; j < athleteCount; j++) {
@@ -35,11 +37,51 @@ onmessage = (e) => {
             }
         }
 
+        // Find who got the nth lowest score and increment their elimination count
         const nthLowestPoints = lowestPoints[request.eliminationCount - 1];
+        let endangeredAthleteCount = 0;
         for (let j = 0; j < athleteCount; j++) {
             if (newPoints[j] <= nthLowestPoints) {
-                eliminationCounts[j]++;
+                endangeredAthleteCount++;
+                eliminationPossible[j] = true;
             }
+        }
+
+        switch (request.tiebreakMode) {
+            case "Random":
+                const eliminationsToAdd = request.eliminationCount / endangeredAthleteCount;
+                for (let j = 0; j < athleteCount; j++) {
+                    if (eliminationPossible[j]) {
+                        eliminationCounts[j] += eliminationsToAdd;
+                    }
+                }
+                break;
+
+            case "HighestPreviousPoints":
+                let maxPreviousPoints = Number.MIN_VALUE;
+                for (let j = 0; j < athleteCount; j++) {
+                    if (eliminationPossible[j] && request.currentPoints[j] > maxPreviousPoints) {
+                        maxPreviousPoints = request.currentPoints[j];
+                    }
+                }
+                for (let j = 0; j < athleteCount; j++) {
+                    if (eliminationPossible[j] && request.currentPoints[j] === maxPreviousPoints) {
+                        eliminationCounts[j]++;
+                    }
+                }
+                break;
+
+            case "EliminateAll":
+                for (let j = 0; j < athleteCount; j++) {
+                    if (eliminationPossible[j]) {
+                        eliminationCounts[j]++;
+                    }
+                }
+                break;
+                
+            default:
+                console.error(`Unknown tiebreak mode: ${request.tiebreakMode}`);
+                break;
         }
     }
 

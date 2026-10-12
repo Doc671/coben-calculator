@@ -1,4 +1,4 @@
-import type { CobenSettings, RoundingMode } from "../lib/persistence/coben-settings"
+import type { CobenSettings, RoundingMode, TiebreakMode } from "../lib/persistence/coben-settings"
 
 interface SettingsPanelProps {
     settings: CobenSettings;
@@ -83,6 +83,18 @@ export default function SettingsPanel({ settings, onUpdateSetting }: SettingsPan
                             className="disabled:bg-gray-200 disabled:text-gray-500 disabled:cursor-not-allowed">
                             significant figures of Wilson interval
                         </option>
+                    </select>
+                </label>
+
+                <label className="flex items-center gap-2">
+                    Tiebreak mode:
+                    <select
+                        value={settings.tiebreakMode}
+                        onChange={e => onUpdateSetting("tiebreakMode", e.target.value as TiebreakMode)}
+                    >
+                        <option value="Random">Random</option>
+                        <option value="HighestPreviousPoints">Highest previous points</option>
+                        <option value="EliminateAll">Eliminate all</option>
                     </select>
                 </label>
             </div>
