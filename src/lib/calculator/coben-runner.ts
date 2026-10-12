@@ -23,7 +23,7 @@ export async function calculateCoben(
     
     const remainder: number = simulationCount % workerCount;
     if (remainder < Number.EPSILON) {
-        simulationsPerThread[workerCount - 1] = simulationCount % workerCount;
+        simulationsPerThread[workerCount - 1] += remainder;
     }
     
     const workerResults = await Promise.all(
